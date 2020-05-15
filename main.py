@@ -8,6 +8,7 @@ from moviepy.editor import *
 start = timeit.default_timer()
 
 number_of_processors=4
+
 def dowload(url):
     ydl_opts = {}
     try:
@@ -16,10 +17,12 @@ def dowload(url):
 
     except:
         pass
+    
 def is_music(url):
     result = requests.get(url).text
     soup = BeautifulSoup(result, 'lxml')
     return str(soup).split("UC-9-kyTW8ZkZNDHQJ6FgpwQ").__len__()!=1
+
 def get_urls(months,number_of_views):
     path=os.path.expanduser('~')+"\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\"
     copyfile(path+"History",
@@ -69,6 +72,7 @@ def get_urls(months,number_of_views):
     text_output.sort(key = lambda output: output[2],reverse=True) #reverse by third value
     save_data_to_text(text_output)
     return url
+
 def multi_processing(function,_product_):
     with multiprocessing.Pool(processes=number_of_processors) as pool:
         results = pool.starmap(function, product(_product_))
@@ -106,8 +110,8 @@ def clean_up(): ## conver MP4 to MP3 and deletes MP4 file
 if __name__ == '__main__':
     number_of_files=0
     number_of_processors = 4
-    months=0.5
-    watch_times=8
+    months=1
+    watch_times=5
     if sys.argv.__len__() == 4:
         months=float(sys.argv[1])
         watch_times=int(sys.argv[2])
