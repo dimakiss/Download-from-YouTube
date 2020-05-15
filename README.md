@@ -20,8 +20,12 @@ python main.py <number_months> <times_watched> <processors>
 
 * **processors** - this script uses parallel computation (multiprocessing) recommended 4/8 based on how strong your pc
 
-`Note: You can run the script without these variables the default setting is number_months=1 watch_times=5 processors = 8`
+`Note: You can run the script without these variables the default setting is number_months=1 watch_times=5 processors = 4`
 
 The script needs to filter out all the non-music youtube videos, Which takes time.\
-Especially if you watch a lot of youtube content. 
+Especially if you watch a lot of youtube content. \
+Also, every music file will need to be downloaded which depends on you download speed.
+
+## Example
+
 
