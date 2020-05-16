@@ -7,14 +7,26 @@ from itertools import product
 from moviepy.editor import *
 start = timeit.default_timer()
 
-number_of_processors=4
+number_of_processors=8
 
 def dowload(url):
     ydl_opts = {}
     try:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-
+        for file in glob.glob("*.mp4"):
+            if url[-10:-1] in file:
+                video = VideoFileClip(os.path.join(file))
+                try:
+                    video.audio.write_audiofile(
+                        os.path.join(os.getcwd() + "\\downloads_\\", (str(file))[:-16] + ".mp3"))
+                    video.close()
+                    os.remove(os.getcwd() + "\\" + file)
+                    return 1
+                except:
+                    video.close()
+                    os.remove(os.getcwd() + "\\" + file)
+                    return 0
     except:
         pass
     
@@ -88,28 +100,9 @@ def save_data_to_text(data):
         f.write(text_output)
     f.close()
 
-def conver_mp4_to_mp3(file):
-    video = VideoFileClip(os.path.join(file))
-    try:
-        video.audio.write_audiofile(os.path.join(os.getcwd() + "\\downloads_\\", (str(file))[:-12] + ".mp3"))
-        video.close()
-        os.remove(os.getcwd() + "\\" + file)
-        return 1
-    except:
-        video.close()
-        os.remove(os.getcwd() + "\\" + file)
-        return 0
-
-def clean_up(): ## conver MP4 to MP3 and deletes MP4 file
-    lst=[]
-    for file in glob.glob("*.mp4"):
-        lst.append(file)
-    results=multi_processing(conver_mp4_to_mp3,lst)
-    return results
-
 if __name__ == '__main__':
     number_of_files=0
-    number_of_processors = 4
+    number_of_processors = 8
     months=1
     watch_times=5
     if sys.argv.__len__() == 4:
@@ -119,8 +112,7 @@ if __name__ == '__main__':
     if os.path.isdir(os.getcwd() + '\\downloads_') == False:
         os.mkdir(os.getcwd()+"\\downloads_")
     urls=get_urls(months,watch_times)
-    multi_processing(dowload,urls)
-    results=clean_up()
+    results=multi_processing(dowload,urls)
     for i in results:
         if i==1:
             number_of_files+=1
