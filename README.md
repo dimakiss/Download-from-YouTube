@@ -30,4 +30,4 @@ All the music downloaded to the folder named "donwloads_" created in the path yo
 Some times few files will not get downloaded due to `youtube-dl` server errors you can try running the script twice to ensure the download of all the files 
 ## Example
 
-163 music files **(43 hours of music)** 2.3 GB took 3246 seconds **(54 min)**
+50 music files 690 MB GB took 688 seconds **(11 min)**
