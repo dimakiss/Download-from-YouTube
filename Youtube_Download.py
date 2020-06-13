@@ -99,14 +99,18 @@ class YoutubeDownload:
         return results
 
     def is_music(self,url):
-        url = "https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=" + url.split('watch?v=')[1] + "&key="
-        key = "YOUR API KEY HERE" #YOUR API KEY HERE
-        url += key
+        #url = "https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=" + url.split('watch?v=')[1] + "&key="
+        #key = "YOUR API KEY HERE" #YOUR API KEY HERE
+        #url += key
+        #result = requests.get(url).text
+        #for i in result.split('\n'):
+        #    if "categoryId" in i:
+        #        return "10" in i
+        #return False
         result = requests.get(url).text
-        for i in result.split('\n'):
-            if "categoryId" in i:
-                return "10" in i
-        return False
+        if "category" not in result:
+            return False
+        return result.split("category")[1][5:].split(str("\\"))[0].lower()=="music"
 
     def sort_by_views(self,list):
         list.sort(key=lambda output: output[2], reverse=True)  # reverse by third value
