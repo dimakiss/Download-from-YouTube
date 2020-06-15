@@ -1,30 +1,32 @@
 from itertools import product
-import History_db,Url
+import History_db
 import calendar,multiprocessing,requests,os,sys,youtube_dl,time,glob,shutil
 from datetime import datetime
 import io
-
+from time import sleep
+import _thread
 class YoutubeDownload:
-
     def __init__(self):
         self.set_up()
         self.didnt=[]
-        self.urls_to_download = self.extract_urls(self.youtube_urls)
         os.chdir(os.getcwd() + "\\downloads_")
-        self.multi_processing(self.dowload, self.urls_to_download)
-        self.clear_files()
-        self.number_of_downloaded_files = self.downloaded_files().__len__()
+        self.multi_processing(self.dowload,self.urls_to_download)
+        #self.clear_files()
+        self.number_of_downloaded_files = self.urls_to_download.__len__()
 
     def set_up(self):
         self.set_download_folder()
         self.parameters()
-        self.youtube_urls=self.get_urls(self.months,self.watch_times)
+        print("Getting the urls")
+        self.urls_to_download=self.get_urls(self.months,self.watch_times)
+        self.count=0
+        self.total=self.urls_to_download.__len__()
 
     def parameters(self):
         self.number_of_files = 0
         self.number_of_processors = 8
-        self.months = 4
-        self.watch_times = 8
+        self.months = 1
+        self.watch_times = 15
         if sys.argv.__len__() == 4:
             self.months = float(sys.argv[1])
             self.watch_times = int(sys.argv[2])
@@ -68,12 +70,11 @@ class YoutubeDownload:
         for i in range(results.__len__()):
             if results[i]:
                 text_output.append([names_temp[i], url_temp[i], count_temp[i]])
-                youtube_urls.append(Url.Url(url_temp[i], count_temp[i]))
                 url.append(url_temp[i])
                 names.append(names_temp[i])
         text_output = self.sort_by_views(text_output)
         self.save_data_to_text(text_output)
-        return youtube_urls
+        return url
 
     def is_youtube_url(self,url):
         return "https://www.youtube.com/watch?v=" == url[:32]
@@ -94,11 +95,14 @@ class YoutubeDownload:
 
     def multi_processing(self,function, _product_):
         with multiprocessing.Pool(processes=self.number_of_processors) as pool:
-            results = pool.starmap(function, product(_product_))
+            self.results = pool.starmap(function, product(_product_))
             pool.close()
-        return results
+        return self.results
 
     def is_music(self,url):
+
+        # metod 1 API method
+
         #url = "https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=" + url.split('watch?v=')[1] + "&key="
         #key = "YOUR API KEY HERE" #YOUR API KEY HERE
         #url += key
@@ -107,6 +111,9 @@ class YoutubeDownload:
         #    if "categoryId" in i:
         #        return "10" in i
         #return False
+
+        # method 2 web scraping method
+
         result = requests.get(url).text
         if "category" not in result:
             return False
@@ -117,23 +124,15 @@ class YoutubeDownload:
         return list
 
     def save_data_to_text(self,data):
-        text_output = "\t\t\t\t URL\t\t\t\t   Times Watched\n"
+        text_output = "\t\t\t\t URL\t\t\t\t   Times Watched \t\t\t\t Name\n"
         for i in data:
             text_output += str(i[1]) + " " + str(i[2]) + " " +str(i[0])+ "\n"
         with io.open(os.getcwd() + "\\url_data.txt", 'w', encoding="utf-8") as f:
             f.write(text_output)
         f.close()
 
-    def extract_urls(self,YoutuveUrlList):
-        if type(YoutuveUrlList[0]) != Url.Url:
-            return []
-        urls = []
-        for i in YoutuveUrlList:
-            urls.append(i.url)
-        return urls
 
     def dowload(self,url):
-
         for i in range(30):
             try:
                 ydl_opts = {
@@ -142,25 +141,35 @@ class YoutubeDownload:
                         'key': 'FFmpegExtractAudio',
                         'preferredcodec': 'mp3',
                         'preferredquality': '192',
-                    }]}
+                    }],
+                    'no_warnings': True,
+                    'quiet': True
+                }
+
                 with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([url])
                 return 1
             except:
-                if i > 15:
-                    time.sleep(1)
                 pass
         self.didnt.append(url)
-    def clear_files(self):
+
+    def clear_file_name(self):
         for file in glob.glob("*.mp3"):
             try:
                 os.rename(file,(str(file))[:-16] + "." + (str(file)).split('.')[-1])
             except:
                 pass
                 #os.remove(file)
-    def downloaded_files(self):
-        files=[]
-        for file in glob.glob("*.mp3"):
-            files.append(file)
-        return files
+
+
+    def progress(self,count, total, status=''):
+        bar_len = 60
+        filled_len = int(round(bar_len * count / float(total)))
+
+        percents = round(100.0 * count / float(total), 1)
+        bar = '=' * filled_len + '-' * (bar_len - filled_len)
+
+        sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+        sys.stdout.flush()  # As suggested by Rom Ruben (see: http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console/27871113#comment50529068_27871113)
+
 
