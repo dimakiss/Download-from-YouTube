@@ -31,4 +31,4 @@ All the music downloaded to the folder named "downloads_" created in the path yo
 I made a for look for every url, only if there are 30 server error per url, then it will not get downloaded
 ## Example
 
-55 music files 1.17 GB took 590 seconds **(10 min)**
+40 music files 1.32 GB took 701 seconds **(11 min)**
