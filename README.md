@@ -25,7 +25,7 @@ python main.py <number_months> <times_watched> <processors>
 The script needs to filter out all the non-music youtube videos, Which takes time.\
 Especially if you watch a lot of youtube content. \
 Also, every music file will need to be downloaded which depends on you download speed.\
-All the music downloaded to the folder named "donwloads_" created in the path you execute the script.
+All the music downloaded to the folder named "downloads_" created in the path you execute the script.
 
 ~~Some times few files will not get downloaded due to `youtube-dl` server errors you can try running the script twice to ensure the download of all the files~~\
 I made a for look for every url, only if there are 30 server error per url, then it will not get downloaded
