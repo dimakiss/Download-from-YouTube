@@ -6,7 +6,7 @@ class History_db():
         self.data=self.get_history_data_base()
 
     def get_history_data_base(self):
-        path =os.path.expanduser('~' ) +"\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\"
+        path =os.path.expanduser('~')+"\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\"
         shutil.copyfile(path +"History",
                         path +"History1")
 
